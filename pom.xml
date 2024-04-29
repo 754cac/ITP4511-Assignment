@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jakartaee>10.0.0</jakartaee>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
@@ -25,13 +25,13 @@
             <artifactId>ojdbc5</artifactId>
             <version>11.2.0.4</version>
         </dependency>
-        <dependency>
+        <dependency>   
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.49</version>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>

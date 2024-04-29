@@ -1,0 +1,4 @@
+ict\db\UserDB.class
+ict\servlet\LoginController.class
+ict\assignment\resources\JakartaEE10Resource.class
+ict\assignment\JakartaRestConfiguration.class
