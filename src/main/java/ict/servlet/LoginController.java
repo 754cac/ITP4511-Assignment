@@ -44,13 +44,13 @@ public class LoginController extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
         String action = request.getParameter("action");
-       if (isAuthenticated(request)) {
-        // Redirect the user to the welcome page unless they are logging out
-        if (!"logout".equals(action)) {
-            redirectToWelcomePage(request, response);
-            return;
+        if (isAuthenticated(request)) {
+            // Redirect the user to the welcome page unless they are logging out
+            if (!"logout".equals(action)) {
+                redirectToWelcomePage(request, response);
+                return;
+            }
         }
-    }
         if ("authenticate".equals(action)) {
             doAuthenticate(request, response);
         } else if ("logout".equals(action)) {
@@ -70,7 +70,7 @@ public class LoginController extends HttpServlet {
         String targetURL = isValid ? "welcome.jsp" : "loginError.jsp";
         if (isValid) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("userInfo", "logged");
+            session.setAttribute("userInfo", email);            
         }
         RequestDispatcher rd = getServletContext()
                 .getRequestDispatcher("/" + targetURL);
@@ -106,10 +106,12 @@ public class LoginController extends HttpServlet {
         }
         return result;
     }
-private void redirectToWelcomePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    RequestDispatcher rd = getServletContext().getRequestDispatcher("/welcome.jsp");
-    rd.forward(request, response);
-}
+
+    private void redirectToWelcomePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        RequestDispatcher rd = getServletContext().getRequestDispatcher("/welcome.jsp");
+        rd.forward(request, response);
+    }
+
     @Override
     public String getServletInfo() {
         return "Login Controller Servlet";
