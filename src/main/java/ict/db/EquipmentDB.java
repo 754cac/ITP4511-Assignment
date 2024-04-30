@@ -139,12 +139,17 @@ public class EquipmentDB {
     public boolean createEquipmentType(EquipmentTypeBean equipmentType) {
         // Notice EquipmentTypeID is not included in the SQL statement
         String sql = "INSERT INTO equipmenttype (TypeName, Description) VALUES (?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try {
+            Connection conn = getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, equipmentType.getTypeName());
             pstmt.setString(2, equipmentType.getDescription());
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
+        } catch (IOException e) {
             e.printStackTrace();
             return false; // Handle SQL exceptions and return false if operation fails
         }
@@ -161,6 +166,9 @@ public class EquipmentDB {
         } catch (SQLException e) {
             e.printStackTrace();
             return false; // Handle SQL exceptions and return false if operation fails
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
         }
     }
 
@@ -171,6 +179,9 @@ public class EquipmentDB {
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
+        } catch (IOException e) {
             e.printStackTrace();
             return false; // Handle SQL exceptions and return false if operation fails
         }
