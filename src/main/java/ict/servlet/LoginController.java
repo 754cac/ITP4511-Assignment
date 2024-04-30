@@ -1,5 +1,6 @@
 package ict.servlet;
 
+import ict.Bean.UserBean;
 import ict.db.UserDB;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -70,7 +71,8 @@ public class LoginController extends HttpServlet {
         String targetURL = isValid ? "welcome.jsp" : "loginError.jsp";
         if (isValid) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("userInfo", email);            
+            UserBean user = db.getUserByEmail(email);
+            session.setAttribute("userId", user.getUserId());
         }
         RequestDispatcher rd = getServletContext()
                 .getRequestDispatcher("/" + targetURL);
@@ -101,7 +103,7 @@ public class LoginController extends HttpServlet {
     private boolean isAuthenticated(HttpServletRequest request) {
         boolean result = false;
         HttpSession session = request.getSession(false);
-        if (session.getAttribute("userInfo") != null) {
+        if (session.getAttribute("userId") != null) {
             result = true;
         }
         return result;
