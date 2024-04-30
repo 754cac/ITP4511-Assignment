@@ -1,6 +1,7 @@
 package ict.db;
 
 import ict.Bean.EquipmentBean;
+import ict.Bean.EquipmentTypeBean;
 import ict.Bean.UserBean;
 import java.io.IOException;
 import static java.lang.System.out;
@@ -110,5 +111,68 @@ public class EquipmentDB {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public EquipmentTypeBean readEquipmentType(String equipmentID) {
+        // Correct the SQL query to fetch both TypeName and Description
+        String sql = "SELECT et.EquipmentTypeID, et.TypeName, et.Description FROM equipment e "
+                + "JOIN equipment_types et ON e.EquipmentTypeID = et.EquipmentTypeID "
+                + "WHERE e.EquipmentID = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, equipmentID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                // Create a new EquipmentTypeBean object and set its properties
+                EquipmentTypeBean equipmentType = new EquipmentTypeBean();
+                equipmentType.setEquipmentTypeID(rs.getString("EquipmentTypeID"));
+                equipmentType.setTypeName(rs.getString("TypeName"));
+                equipmentType.setDescription(rs.getString("Description"));
+                return equipmentType;  // Return the fully populated EquipmentTypeBean
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+        return null; // Return null if no records found or if there's an exception
+    }
+
+    public boolean createEquipmentType(EquipmentTypeBean equipmentType) {
+        // Notice EquipmentTypeID is not included in the SQL statement
+        String sql = "INSERT INTO equipmenttype (TypeName, Description) VALUES (?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, equipmentType.getTypeName());
+            pstmt.setString(2, equipmentType.getDescription());
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
+        }
+    }
+
+    public boolean updateEquipmentType(EquipmentTypeBean equipmentType) {
+        String sql = "UPDATE equipmenttype SET TypeName = ?, Description = ? WHERE EquipmentTypeID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, equipmentType.getTypeName());
+            pstmt.setString(2, equipmentType.getDescription());
+            pstmt.setString(3, equipmentType.getEquipmentTypeID());
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
+        }
+    }
+
+    public boolean deleteEquipmentType(String equipmentTypeID) {
+        String sql = "DELETE FROM equipmenttype WHERE EquipmentTypeID = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, equipmentTypeID);
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Handle SQL exceptions and return false if operation fails
+        }
     }
 }
