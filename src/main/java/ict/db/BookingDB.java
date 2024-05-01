@@ -9,29 +9,15 @@ import java.time.ZoneId;
 
 public class BookingDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public BookingDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            throw new SQLException("Driver not found");
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public BookingDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     public boolean createBooking(BookingBean booking) {
         String sql = "INSERT INTO bookings (UserID, EquipmentID, BookingDate, PickupDate, ReturnDate, Status, TechnicianID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, booking.getUserID());
             ps.setInt(2, booking.getEquipmentID());
             ps.setTimestamp(3, Timestamp.valueOf(booking.getBookingDate()));
@@ -49,7 +35,7 @@ public class BookingDB {
 
     public BookingBean readBooking(int bookingID) {
         String sql = "SELECT * FROM bookings WHERE BookingID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookingID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -72,7 +58,7 @@ public class BookingDB {
 
     public boolean updateBooking(BookingBean booking) {
         String sql = "UPDATE bookings SET UserID=?, EquipmentID=?, BookingDate=?, PickupDate=?, ReturnDate=?, Status=?, TechnicianID=? WHERE BookingID=?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, booking.getUserID());
             ps.setInt(2, booking.getEquipmentID());
             ps.setTimestamp(3, Timestamp.valueOf(booking.getBookingDate()));
@@ -91,7 +77,7 @@ public class BookingDB {
 
     public boolean deleteBooking(int bookingID) {
         String sql = "DELETE FROM bookings WHERE BookingID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, bookingID);
             int result = ps.executeUpdate();
             return result > 0;

@@ -14,30 +14,16 @@ import java.sql.SQLException;
 
 public class EquipmentDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public EquipmentDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public EquipmentDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     // Create operation
     public boolean addEquipment(EquipmentBean equipment) {
         String sql = "INSERT INTO equipment (EquipmentID, EquipmentName, EquipmentType, Description, SerialNumber, AcquisitionDate, Status, Campus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipment.getEquipmentID());
             pstmt.setString(2, equipment.getEquipmentName());
             pstmt.setString(3, equipment.getEquipmentType());
@@ -57,7 +43,7 @@ public class EquipmentDB {
     // Read operation
     public EquipmentBean getEquipment(String equipmentID) {
         String sql = "SELECT * FROM equipment WHERE EquipmentID = ?";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipmentID);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -83,7 +69,7 @@ public class EquipmentDB {
     // Update operation
     public boolean updateEquipment(EquipmentBean equipment) {
         String sql = "UPDATE equipment SET EquipmentName = ?, EquipmentType = ?, Description = ?, SerialNumber = ?, AcquisitionDate = ?, Status = ?, Campus = ? WHERE EquipmentID = ?";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipment.getEquipmentName());
             pstmt.setString(2, equipment.getEquipmentType());
             pstmt.setString(3, equipment.getDescription());
@@ -103,7 +89,7 @@ public class EquipmentDB {
     // Delete operation
     public boolean deleteEquipment(String equipmentID) {
         String sql = "DELETE FROM equipment WHERE EquipmentID = ?";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipmentID);
             int result = pstmt.executeUpdate();
             return result > 0;
@@ -119,7 +105,7 @@ public class EquipmentDB {
                 + "JOIN equipment_types et ON e.EquipmentTypeID = et.EquipmentTypeID "
                 + "WHERE e.EquipmentID = ?";
 
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipmentID);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -140,7 +126,7 @@ public class EquipmentDB {
         // Notice EquipmentTypeID is not included in the SQL statement
         String sql = "INSERT INTO equipmenttype (TypeName, Description) VALUES (?, ?)";
         try {
-            Connection conn = getConnection();
+            Connection conn = connector.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, equipmentType.getTypeName());
             pstmt.setString(2, equipmentType.getDescription());
@@ -157,7 +143,7 @@ public class EquipmentDB {
 
     public boolean updateEquipmentType(EquipmentTypeBean equipmentType) {
         String sql = "UPDATE equipmenttype SET TypeName = ?, Description = ? WHERE EquipmentTypeID = ?";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipmentType.getTypeName());
             pstmt.setString(2, equipmentType.getDescription());
             pstmt.setString(3, equipmentType.getEquipmentTypeID());
@@ -174,7 +160,7 @@ public class EquipmentDB {
 
     public boolean deleteEquipmentType(String equipmentTypeID) {
         String sql = "DELETE FROM equipmenttype WHERE EquipmentTypeID = ?";
-        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, equipmentTypeID);
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;

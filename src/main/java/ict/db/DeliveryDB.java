@@ -9,30 +9,16 @@ import java.time.LocalDate;
 
 public class DeliveryDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public DeliveryDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            throw new SQLException("Driver not found");
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public DeliveryDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     // Create a new delivery
     public boolean createDelivery(DeliveryBean delivery) {
         String sql = "INSERT INTO deliveries (BookingID, CourierID, PickupLocation, DeliveryLocation, PickupDate, DeliveryDate, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, delivery.getBookingID());
             ps.setString(2, delivery.getCourierID());
             ps.setString(3, delivery.getPickupLocation());
@@ -63,7 +49,7 @@ public class DeliveryDB {
     // Read a delivery by ID
     public DeliveryBean getDelivery(String deliveryID) {
         String sql = "SELECT * FROM deliveries WHERE DeliveryID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, deliveryID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -88,7 +74,7 @@ public class DeliveryDB {
     // Update an existing delivery
     public boolean updateDelivery(DeliveryBean delivery) {
         String sql = "UPDATE deliveries SET BookingID = ?, CourierID = ?, PickupLocation = ?, DeliveryLocation = ?, PickupDate = ?, DeliveryDate = ?, Status = ? WHERE DeliveryID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, delivery.getBookingID());
             ps.setString(2, delivery.getCourierID());
             ps.setString(3, delivery.getPickupLocation());
@@ -109,7 +95,7 @@ public class DeliveryDB {
     // Delete a delivery
     public boolean deleteDelivery(String deliveryID) {
         String sql = "DELETE FROM deliveries WHERE DeliveryID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, deliveryID);
 
             int affectedRows = ps.executeUpdate();

@@ -9,30 +9,16 @@ import java.time.ZoneId;
 
 public class DamageReportDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public DamageReportDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            throw new SQLException("Driver not found");
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public DamageReportDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     // Create a new damage report
     public boolean createDamageReport(DamageReportBean damageReport) {
         String sql = "INSERT INTO damagereports (EquipmentID, BookingID, TechnicianID, DamageDescription, DamageDate, Status) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, damageReport.getEquipmentID());
             stmt.setString(2, damageReport.getBookingID());
             stmt.setString(3, damageReport.getTechnicianID());
@@ -51,7 +37,7 @@ public class DamageReportDB {
     // Read a damage report by ID
     public DamageReportBean getDamageReport(String damageReportID) {
         String sql = "SELECT * FROM damagereports WHERE DamageReportID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, damageReportID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -74,7 +60,7 @@ public class DamageReportDB {
     // Update an existing damage report
     public boolean updateDamageReport(DamageReportBean damageReport) {
         String sql = "UPDATE damagereports SET EquipmentID = ?, BookingID = ?, TechnicianID = ?, DamageDescription = ?, DamageDate = ?, Status = ? WHERE DamageReportID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, damageReport.getEquipmentID());
             stmt.setString(2, damageReport.getBookingID());
             stmt.setString(3, damageReport.getTechnicianID());
@@ -94,7 +80,7 @@ public class DamageReportDB {
     // Delete a damage report
     public boolean deleteDamageReport(String damageReportID) {
         String sql = "DELETE FROM damagereports WHERE DamageReportID = ?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, damageReportID);
             int result = stmt.executeUpdate();
             return result > 0;

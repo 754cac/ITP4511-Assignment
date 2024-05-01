@@ -1,6 +1,7 @@
 package ict.servlet;
 
 import ict.Bean.UserBean;
+import ict.db.DBConnection;
 import ict.db.UserDB;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -10,20 +11,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import static java.lang.System.out;
 
 @WebServlet(urlPatterns = {"/login"})
 public class LoginController extends HttpServlet {
 
     private UserDB db;
+    private DBConnection connector;
 
     @Override
     public void init() {
         String dbUrl = this.getServletContext().getInitParameter("dbUrl");
         String dbUser = this.getServletContext().getInitParameter("dbUser");
         String dbPassword = this.getServletContext().getInitParameter("dbPassword");
-        out.print(dbUrl + " " + dbUser + " " + dbPassword);
-        this.db = new UserDB(dbUrl, dbUser, dbPassword);
+        this.connector = new DBConnection(dbUrl, dbUser, dbPassword);
+        this.db = new UserDB(connector);
     }
 
     @Override

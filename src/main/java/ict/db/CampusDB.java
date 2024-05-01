@@ -6,30 +6,16 @@ import java.sql.*;
 
 public class CampusDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public CampusDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-            throw new SQLException("Driver not found");
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public CampusDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     // Create a new campus
     public boolean createCampus(CampusBean campus) {
         String sql = "INSERT INTO campus (CampusName, Location) VALUES (?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, campus.getCampusName());
             ps.setString(2, campus.getLocation());
 
@@ -55,7 +41,7 @@ public class CampusDB {
     // Read a campus by ID
     public CampusBean getCampus(int campusID) {
         String sql = "SELECT * FROM campus WHERE CampusID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, campusID);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -74,7 +60,7 @@ public class CampusDB {
     // Update an existing campus
     public boolean updateCampus(CampusBean campus) {
         String sql = "UPDATE campus SET CampusName = ?, Location = ? WHERE CampusID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, campus.getCampusName());
             ps.setString(2, campus.getLocation());
             ps.setInt(3, Integer.parseInt(campus.getCampusID()));
@@ -90,7 +76,7 @@ public class CampusDB {
     // Delete a campus
     public boolean deleteCampus(int campusID) {
         String sql = "DELETE FROM campus WHERE CampusID = ?";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, campusID);
 
             int affectedRows = ps.executeUpdate();

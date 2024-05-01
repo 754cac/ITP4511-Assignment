@@ -11,24 +11,10 @@ import java.sql.SQLException;
 
 public class UserDB {
 
-    private String dburl;
-    private String dbUser;
-    private String dbPassword;
+    private DBConnection connector;
 
-    public UserDB(String dburl, String dbUser, String dbPassword) {
-        this.dburl = dburl;
-        this.dbUser = dbUser;
-        this.dbPassword = dbPassword;
-
-    }
-
-    public Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        return DriverManager.getConnection(dburl, dbUser, dbPassword);
+    public UserDB(DBConnection connector) {
+        this.connector = connector;
     }
 
     public boolean isValidUser(String user, String pwd) {
@@ -38,7 +24,7 @@ public class UserDB {
         String preQueryStatement
                 = "SELECT * FROM users WHERE Email=? and Password=?";
         try {
-            cnnct = getConnection();
+            cnnct = connector.getConnection();
             pStmnt = cnnct.prepareStatement(preQueryStatement);
             pStmnt.setString(1, user);
             pStmnt.setString(2, pwd);
@@ -61,7 +47,7 @@ public class UserDB {
 
     public UserBean getUserById(String id) {
         String query = "SELECT * FROM users WHERE UserID=?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -75,7 +61,7 @@ public class UserDB {
 
     public UserBean getUserByEmail(String email) {
         String query = "SELECT * FROM users WHERE Email=?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -89,7 +75,7 @@ public class UserDB {
 
     public boolean addUser(UserBean user) {
         String query = "INSERT INTO users (Name, Email, Password, Role, CampusId) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
 //set the initial password as email, let user update password at latter time
@@ -106,7 +92,7 @@ public class UserDB {
 
     public boolean deleteUserById(String id) {
         String query = "DELETE FROM users WHERE UserID=?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, id);
             int rowCount = stmt.executeUpdate();
             return rowCount > 0;
@@ -118,7 +104,7 @@ public class UserDB {
 
     public boolean deleteUserByEmail(String email) {
         String query = "DELETE FROM users WHERE Email=?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, email);
             int rowCount = stmt.executeUpdate();
             return rowCount > 0;
@@ -142,7 +128,7 @@ public class UserDB {
     public boolean updateUser(UserBean user) {
         // SQL query to update user details
         String query = "UPDATE users SET Name=?, Email=?, Password=?, Role=?, CampusId=? WHERE UserID=?";
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = connector.getConnection(); PreparedStatement stmt = conn.prepareStatement(query)) {
             // Set parameters for the prepared statement
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
