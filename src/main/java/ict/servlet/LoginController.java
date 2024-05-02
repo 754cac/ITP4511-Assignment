@@ -62,21 +62,37 @@ public class LoginController extends HttpServlet {
         }
     }
 
-    private void doAuthenticate(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException, ServletException {
+    private void doAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        boolean isValid = db.isValidUser(email, password);
-        String targetURL = isValid ? "welcome.jsp" : "loginError.jsp";
-        if (isValid) {
+        UserBean user = db.isValidUser(email, password); 
+        String targetURL;
+
+        if (user != null) {
             HttpSession session = request.getSession(true);
-            UserBean user = db.getUserByEmail(email);
-            session.setAttribute("userId", user.getUserId());
+            session.setAttribute("user", user); 
+            switch (user.getRole()) {
+                case "Administrator":
+                    targetURL = "/admin_dashboard.jsp";
+                    break;
+                case "Technician":
+                    targetURL = "/technician_dashboard.jsp";
+                    break;
+                case "Courier":
+                    targetURL = "/courier_dashboard.jsp";
+                    break;
+                case "User":
+                    targetURL = "/user_dashboard.jsp";
+                    break;
+                default:
+                    targetURL = "/loginError.jsp"; 
+                    break;
+            }
+        } else {
+            targetURL = "/loginError.jsp"; 
         }
-        RequestDispatcher rd = getServletContext()
-                .getRequestDispatcher("/" + targetURL);
+
+        RequestDispatcher rd = getServletContext().getRequestDispatcher(targetURL);
         rd.forward(request, response);
     }
 
