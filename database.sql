@@ -25,13 +25,20 @@ CREATE TABLE EquipmentType (
     Description VARCHAR(200)
 );
 
+INSERT INTO EquipmentType (TypeName, Description) VALUES
+    ('Cameras', 'High-resolution video cameras'),
+    ('Drones', 'Ultra-portable drones'),
+    ('Laser Pointers', 'Portable laser pointers'),
+    ('Projectors', 'Portable projectors'),
+    ('Whiteboards', 'Ergonomic whiteboards');
+
 -- Create the Users table
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
     Email VARCHAR(100) NOT NULL UNIQUE,
     Password VARCHAR(100) NOT NULL,
-    Role ENUM('User', 'Technician', 'Courier', 'Administrator') NOT NULL,
+    Role ENUM('User', 'Staff', 'Technician', 'Courier', 'Administrator') NOT NULL,
     CampusID INT NOT NULL,
     FOREIGN KEY (CampusID) REFERENCES Campus(CampusID)
 );
@@ -55,6 +62,14 @@ CREATE TABLE Equipment (
     FOREIGN KEY (EquipmentTypeID) REFERENCES EquipmentType(EquipmentTypeID),
     FOREIGN KEY (CampusID) REFERENCES Campus(CampusID)
 );
+
+
+INSERT INTO Equipment (EquipmentName, EquipmentTypeID, Description, SerialNumber, AcquisitionDate, Status, CampusID) VALUES
+    ('Camera', 1, 'High-resolution video camera', 'CAM123', '2022-01-01', 'Available', 1),
+    ('Drone', 2, 'Ultra-portable drone', 'DRN123', '2021-12-31', 'Available', 2),
+    ('Laser Pointer', 3, 'Portable laser pointer', 'LSP123', '2022-06-15', 'Available', 3),
+    ('Projector', 4, 'Portable projector', 'PRJ123', '2022-05-01', 'Booked', 4),
+    ('Whiteboard', 5, 'Ergonomic whiteboard', 'WHT123', '2022-03-15', 'Damaged', 5);
 
 -- Create the Bookings table
 CREATE TABLE Bookings (
