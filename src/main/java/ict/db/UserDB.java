@@ -17,32 +17,30 @@ public class UserDB {
         this.connector = connector;
     }
 
-    public boolean isValidUser(String user, String pwd) {
-        boolean isValid = false;
+    public UserBean isValidUser(String email, String pwd) {
         Connection cnnct = null;
         PreparedStatement pStmnt = null;
-        String preQueryStatement
-                = "SELECT * FROM users WHERE Email=? and Password=?";
+        String preQueryStatement = "SELECT * FROM users WHERE Email=? and Password=?";
         try {
             cnnct = connector.getConnection();
             pStmnt = cnnct.prepareStatement(preQueryStatement);
-            pStmnt.setString(1, user);
+            pStmnt.setString(1, email);
             pStmnt.setString(2, pwd);
             ResultSet rs = pStmnt.executeQuery();
             if (rs.next()) {
-                isValid = true;
+                return extractUserFromResultSet(rs);
             }
-            pStmnt.close();
-            cnnct.close();
-        } catch (SQLException ex) {
-            while (ex != null) {
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (pStmnt != null) pStmnt.close();
+                if (cnnct != null) cnnct.close();
+            } catch (SQLException ex) {
                 ex.printStackTrace();
-                ex = ex.getNextException();
             }
-        } catch (IOException ie) {
-            ie.printStackTrace();
         }
-        return isValid;
+        return null;
     }
 
     public UserBean getUserById(String id) {
