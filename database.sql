@@ -11,6 +11,13 @@ CREATE TABLE Campus (
     Location VARCHAR(200)
 );
 
+INSERT INTO Campus (CampusName, Location) VALUES
+    ('Sha Tin Campus', 'Shatin Street'),
+    ('Chai Wan Campus', 'ChaiWan Street'),
+    ('Lee Wai Lee Campus', 'LeeWaiLee Street'),
+    ('Tuen Mun Campus', 'TuenMun Street'),
+    ('Tsing Yi Campus', 'TsingYi Street');
+
 -- Create the EquipmentType table
 CREATE TABLE EquipmentType (
     EquipmentTypeID INT AUTO_INCREMENT PRIMARY KEY,
@@ -28,6 +35,12 @@ CREATE TABLE Users (
     CampusID INT NOT NULL,
     FOREIGN KEY (CampusID) REFERENCES Campus(CampusID)
 );
+
+INSERT INTO Users (Name, Email, Password, Role, CampusID) VALUES
+    ('John Doe', 'johndoe@example.com', 'password123', 'User', 1),
+    ('Jane Smith', 'janesmith@example.com', 'password456', 'Technician', 2),
+    ('Admin User', 'admin@example.com', 'admin123', 'Administrator', 3),
+    ('Courier User', 'courier@example.com', 'courier123', 'Courier', 4);
 
 -- Create the Equipment table
 CREATE TABLE Equipment (
