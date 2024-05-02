@@ -11,8 +11,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EquipmentDB {
 
@@ -173,52 +171,5 @@ public class EquipmentDB {
             e.printStackTrace();
             return false; // Handle SQL exceptions and return false if operation fails
         }
-    }
-    
-    public List<EquipmentBean> getAllEquipments() {
-        List<EquipmentBean> equipments = new ArrayList<>();
-        String sql = "SELECT * FROM equipment";
-        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                EquipmentBean equipment = new EquipmentBean();
-                equipment.setEquipmentID(rs.getString("EquipmentID"));
-                equipment.setEquipmentName(rs.getString("EquipmentName"));
-                equipment.setDescription(rs.getString("Description"));
-                equipment.setSerialNumber(rs.getString("SerialNumber"));
-                equipment.setAcquisitionDate(rs.getDate("AcquisitionDate"));
-                equipment.setStatus(rs.getString("Status"));
-                equipment.setCampus(rs.getString("Campus"));
-                equipments.add(equipment);
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-        return equipments;
-    }
-    
-    public List<EquipmentBean> getAllAvailableEquipments() {
-        List<EquipmentBean> equipments = new ArrayList<>();
-        String sql = "SELECT Equipment.*, Campus.CampusName " +
-                        "FROM Equipment " +
-                        "JOIN Campus ON Equipment.CampusID = Campus.CampusID " +
-                        "WHERE Equipment.Status = 'Available';";
-        try (Connection conn = connector.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                EquipmentBean equipment = new EquipmentBean();
-                equipment.setEquipmentID(rs.getString("EquipmentID"));
-                equipment.setEquipmentName(rs.getString("EquipmentName"));
-                equipment.setDescription(rs.getString("Description"));
-                equipment.setSerialNumber(rs.getString("SerialNumber"));
-                equipment.setAcquisitionDate(rs.getDate("AcquisitionDate"));
-                equipment.setStatus(rs.getString("Status"));
-                equipment.setCampus(rs.getString("CampusName"));
-                equipments.add(equipment);
-            }
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-        return equipments;
     }
 }

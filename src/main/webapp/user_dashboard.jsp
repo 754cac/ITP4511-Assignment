@@ -1,6 +1,6 @@
 <%-- 
-    Document   : staff_dashboard
-    Created on : 2024年5月2日, 下午11:03:26
+    Document   : user_dashboard
+    Created on : 2024年5月2日, 下午7:18:19
     Author     : ho135
 --%>
 
@@ -12,6 +12,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Staff</h1>
+        <h1>USER</h1>
     </body>
 </html>

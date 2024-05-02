@@ -75,19 +75,16 @@ public class LoginController extends HttpServlet {
             session.setAttribute("user", user); 
             switch (user.getRole()) {
                 case "Administrator":
-                    targetURL = "/admin/admin_dashboard.jsp";
+                    targetURL = "/admin_dashboard.jsp";
                     break;
                 case "Technician":
-                    targetURL = "/technician/technician_dashboard.jsp";
+                    targetURL = "/technician_dashboard.jsp";
                     break;
                 case "Courier":
-                    targetURL = "/courier/courier_dashboard.jsp";
-                    break;
-                 case "Staff":
-                    targetURL = "/staff/staff_dashboard.jsp";
+                    targetURL = "/courier_dashboard.jsp";
                     break;
                 case "User":
-                    targetURL = "/user/user_dashboard.jsp";
+                    targetURL = "/user_dashboard.jsp";
                     break;
                 default:
                     targetURL = "/loginError.jsp"; 
