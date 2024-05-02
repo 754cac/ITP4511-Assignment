@@ -1,7 +1,7 @@
 <%-- 
-    Document   : welcome
-    Created on : Apr 29, 2024, 5:54:36 PM
-    Author     : user
+    Document   : wishlist
+    Created on : 2024年5月3日, 上午12:14:51
+    Author     : ho135
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,7 +12,6 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Hello World!Welcome</h1>
+        <h1>Hello World!</h1>
     </body>
-    TEST222
 </html>
