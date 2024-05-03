@@ -17,7 +17,7 @@ public class UserDB {
         this.connector = connector;
     }
 
-    public UserBean isValidUser(String user, String pwd) {
+    public boolean isValidUser(String user, String pwd) {
         boolean isValid = false;
         Connection cnnct = null;
         PreparedStatement pStmnt = null;
@@ -42,7 +42,7 @@ public class UserDB {
         } catch (IOException ie) {
             ie.printStackTrace();
         }
-        return null;
+        return isValid;
     }
 
     public UserBean getUserById(String id) {
